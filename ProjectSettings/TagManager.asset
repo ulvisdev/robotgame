@@ -2,7 +2,7 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
+  serializedVersion: 3
   tags: []
   layers:
   - Default
@@ -11,7 +11,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Walls
   - 
   - 
   - 
@@ -41,3 +41,14 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Deco
+    uniqueID: 1021446149
+    locked: 0
+  - name: Robot
+    uniqueID: 1086263707
+    locked: 0
+  - name: Walls
+    uniqueID: 102065339
+    locked: 0
+  m_RenderingLayers:
+  - Default
