@@ -4,12 +4,18 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 public class RobotPlatformButton : MonoBehaviour
 {
+
+    [Header("Button Sprites")]
+    [SerializeField] private SpriteRenderer buttonSpriteRenderer;
+    [SerializeField] private Sprite idleSprite;
+    [SerializeField] private Sprite pressedSprite;
+
     [Header("Platforms Controlled By This Button")]
     [SerializeField] private List<ButtonMovingPlatform> controlledPlatforms = new();
 
     [Header("Optional Button Visual")]
     [SerializeField] private Transform buttonVisual;
-    [SerializeField] private Vector3 pressedLocalOffset = new Vector3(0f, -0.08f, 0f);
+    [SerializeField] private Vector3 pressedLocalOffset = new Vector3(0f, 0f, 0f);
 
     private readonly HashSet<Collider2D> robotCollidersOnButton = new();
 
@@ -25,6 +31,9 @@ public class RobotPlatformButton : MonoBehaviour
 
         if (buttonVisual != null)
             releasedVisualPosition = buttonVisual.localPosition;
+        
+        if (buttonSpriteRenderer != null)
+            buttonSpriteRenderer.sprite = idleSprite;
     }
 
     private void OnEnable()
@@ -81,9 +90,11 @@ public class RobotPlatformButton : MonoBehaviour
 
         currentPressedState = pressed;
 
-        if (buttonVisual != null)
+        if (buttonSpriteRenderer != null)
         {
-            buttonVisual.localPosition = pressed ? releasedVisualPosition + pressedLocalOffset : releasedVisualPosition;
+            buttonSpriteRenderer.sprite = pressed
+                ? pressedSprite
+                : idleSprite;
         }
 
         foreach (ButtonMovingPlatform platform in controlledPlatforms)
@@ -92,4 +103,5 @@ public class RobotPlatformButton : MonoBehaviour
                 platform.SetButtonState(this, pressed);
         }
     }
+
 }
