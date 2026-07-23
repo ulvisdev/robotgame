@@ -1019,7 +1019,7 @@ MonoBehaviour:
   MaxEnergy: 100
   EnergyDrainRate: 1
   RobotEnergyDrainRate: 2
-  robot: {fileID: 0}
+  robot: {fileID: 205315133}
 --- !u!1 &975250569
 GameObject:
   m_ObjectHideFlags: 0
@@ -1142,7 +1142,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 11.25
+  orthographic size: 18.78125
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
