@@ -19,10 +19,15 @@ public class Robot : MonoBehaviour
 
     private Vector2 expectedPosition;
 
+    [Header("Animation")]
+    private Animator animator;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
+
         movingTowardsB = startMovingTowardsB;
         expectedPosition = rb.position;
 
@@ -33,63 +38,65 @@ public class Robot : MonoBehaviour
             pointB.SetParent(null, true);
     }
 
-private void FixedUpdate()
-{
-    if (pointA == null || pointB == null)
-        return;
-
-    Vector2 externalMovement = rb.position - expectedPosition;
-
-    if (externalMovement.sqrMagnitude > 0.000001f)
+    private void FixedUpdate()
     {
-        pointA.position += (Vector3)externalMovement;
-        pointB.position += (Vector3)externalMovement;
+        animator.SetBool("moving", moving);
 
-        expectedPosition = rb.position;
-    }
+        if (pointA == null || pointB == null)
+            return;
 
-    if (!moving)
-    {
-        expectedPosition = rb.position;
-        return;
-    }
+        Vector2 externalMovement = rb.position - expectedPosition;
 
-    Vector2 targetPosition = movingTowardsB
-        ? pointB.position
-        : pointA.position;
+        if (externalMovement.sqrMagnitude > 0.000001f)
+        {
+            pointA.position += (Vector3)externalMovement;
+            pointB.position += (Vector3)externalMovement;
 
-    Vector2 newPosition = Vector2.MoveTowards(
-        rb.position,
-        targetPosition,
-        MoveSpeed * Time.fixedDeltaTime
-    );
+            expectedPosition = rb.position;
+        }
 
-    Vector2 movement = newPosition - rb.position;
+        if (!moving)
+        {
+            expectedPosition = rb.position;
+            return;
+        }
 
-    bool movedSuccessfully = TryMove(movement);
+        Vector2 targetPosition = movingTowardsB
+            ? pointB.position
+            : pointA.position;
 
-    if (!movedSuccessfully)
-    {
-        moving = false;
-        movingTowardsB = !movingTowardsB;
-        expectedPosition = rb.position;
-        return;
-    }
+        Vector2 newPosition = Vector2.MoveTowards(
+            rb.position,
+            targetPosition,
+            MoveSpeed * Time.fixedDeltaTime
+        );
 
-    expectedPosition = newPosition;
+        Vector2 movement = newPosition - rb.position;
 
-    if (movement.x < 0f)
-        sr.flipX = true;
-    else if (movement.x > 0f)
-        sr.flipX = false;
-    
-    if (Vector2.Distance(newPosition, targetPosition) <= arrivalDistance)
-    {
-        moving = false;
-        movingTowardsB = !movingTowardsB;
+        bool movedSuccessfully = TryMove(movement);
+
+        if (!movedSuccessfully)
+        {
+            SetMoving(false);
+            movingTowardsB = !movingTowardsB;
+            expectedPosition = rb.position;
+            return;
+        }
+
         expectedPosition = newPosition;
+
+        if (movement.x < 0f)
+            sr.flipX = true;
+        else if (movement.x > 0f)
+            sr.flipX = false;
+
+        if (Vector2.Distance(newPosition, targetPosition) <= arrivalDistance)
+        {
+            SetMoving(false);
+            movingTowardsB = !movingTowardsB;
+            expectedPosition = newPosition;
+        }
     }
-}
 
     private readonly RaycastHit2D[] pushHits = new RaycastHit2D[8];
     private bool TryMove(Vector2 movement)
@@ -129,11 +136,13 @@ private void FixedUpdate()
     {
         Debug.Log("Robot clicked!");
 
-        moving = !moving;
-        expectedPosition = rb.position;
+        SetMoving(!moving);
 
-        if (!moving)
-            rb.linearVelocity = Vector2.zero;
+        // moving = !moving;
+        // expectedPosition = rb.position;
+
+        // if (!moving)
+        //     rb.linearVelocity = Vector2.zero;
     }
 
     void OnDrawGizmos()
@@ -143,6 +152,14 @@ private void FixedUpdate()
 
         Gizmos.color = Color.green;
         Gizmos.DrawLine(pointA.position, pointB.position);
+    }
+
+    private void SetMoving(bool value)
+    {
+        moving = value;
+
+        if (animator != null)
+            animator.SetBool("moving", moving);
     }
 
 }
