@@ -9,6 +9,7 @@ public class Bar : MonoBehaviour
     [SerializeField] private float MaxEnergy = 100f;
     [SerializeField] private float EnergyDrainRate = 1f;
     [SerializeField] private float RobotEnergyDrainRate = 2f;
+    private bool energyDepleted;
 
     [Header("Robot connected to this bar")]
     [SerializeField] private Robot[] robots;
@@ -20,6 +21,9 @@ public class Bar : MonoBehaviour
 
     void Update()
     {
+        if (energyDepleted)
+            return;
+
         float totalDrain = EnergyDrainRate;
 
         foreach (Robot robot in robots)
@@ -33,6 +37,12 @@ public class Bar : MonoBehaviour
         Energy -= totalDrain * Time.deltaTime;
         Energy = Mathf.Clamp(Energy, 0f, MaxEnergy);
         EnergyBar.fillAmount = Energy / MaxEnergy;
+
+        if (Energy <= 0f)
+        {
+            energyDepleted = true;
+            GameOverManager.Instance.ShowGameOver();
+        }
         
         // if (Energy > 0)
         // {

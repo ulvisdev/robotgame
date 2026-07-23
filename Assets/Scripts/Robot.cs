@@ -1,4 +1,5 @@
 using UnityEngine;
+using DG.Tweening;
 
 public class Robot : MonoBehaviour
 {
@@ -15,9 +16,21 @@ public class Robot : MonoBehaviour
     private SpriteRenderer sr;
     private bool movingTowardsB;
     private bool moving = false;
-    public bool ismoving => moving;
+    public bool ismoving => moving && !isReacting;
 
     private Vector2 expectedPosition;
+
+    [Header("Visual Reaction")]
+    [SerializeField] private Transform visual;
+    [SerializeField] private float wallPause = 0.2f;
+    [SerializeField] private float togglePause = 0.15f;
+    [SerializeField] private float shakeDuration = 0.25f;
+    [SerializeField] private float shakeStrength = 0.08f;
+    [SerializeField] private int shakeVibrato = 12;
+
+    private bool isReacting;
+    private Sequence reactionSequence;
+    private Vector3 visualRestLocalPosition;
 
     [Header("Animation")]
     private Animator animator;
@@ -25,8 +38,10 @@ public class Robot : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        sr = GetComponent<SpriteRenderer>();
-        animator = GetComponent<Animator>();
+        sr = visual.GetComponentInChildren<SpriteRenderer>();
+        animator = visual.GetComponentInChildren<Animator>();
+
+        visualRestLocalPosition = visual.localPosition;
 
         movingTowardsB = startMovingTowardsB;
         expectedPosition = rb.position;
@@ -55,6 +70,12 @@ public class Robot : MonoBehaviour
             expectedPosition = rb.position;
         }
 
+        if (isReacting)
+        {
+            expectedPosition = rb.position;
+            return;
+        }
+
         if (!moving)
         {
             expectedPosition = rb.position;
@@ -77,8 +98,9 @@ public class Robot : MonoBehaviour
 
         if (!movedSuccessfully)
         {
-            SetMoving(false);
-            movingTowardsB = !movingTowardsB;
+            // SetMoving(false);
+            // movingTowardsB = !movingTowardsB;
+            PlayWallBounce();
             expectedPosition = rb.position;
             return;
         }
@@ -92,7 +114,7 @@ public class Robot : MonoBehaviour
 
         if (Vector2.Distance(newPosition, targetPosition) <= arrivalDistance)
         {
-            SetMoving(false);
+            // SetMoving(false);
             movingTowardsB = !movingTowardsB;
             expectedPosition = newPosition;
         }
@@ -136,7 +158,12 @@ public class Robot : MonoBehaviour
     {
         Debug.Log("Robot clicked!");
 
-        SetMoving(!moving);
+        if (isReacting)
+            return;
+
+        PlayPowerToggle();
+
+        // SetMoving(!moving);
 
         // moving = !moving;
         // expectedPosition = rb.position;
@@ -156,10 +183,91 @@ public class Robot : MonoBehaviour
 
     private void SetMoving(bool value)
     {
+        if (moving == value)
+            return;
+
         moving = value;
 
         if (animator != null)
             animator.SetBool("moving", moving);
     }
 
+    private void PlayWallBounce()
+    {
+        if (isReacting || visual == null)
+            return;
+
+        isReacting = true;
+
+        reactionSequence?.Kill();
+        visual.localPosition = visualRestLocalPosition;
+
+        reactionSequence = DOTween.Sequence();
+        reactionSequence.AppendInterval(wallPause).Append(visual.DOShakePosition(
+                    shakeDuration,
+                    new Vector3(shakeStrength, shakeStrength, 0f),
+                    shakeVibrato,
+                    90f,
+                    false,
+                    true
+                )).OnComplete(() =>
+            {
+                visual.localPosition = visualRestLocalPosition;
+                movingTowardsB = !movingTowardsB;
+                expectedPosition = rb.position;
+                isReacting = false;
+            }).SetLink(gameObject);
+    }
+
+    private void PlayPowerToggle()
+    {
+        if (visual == null)
+            return;
+
+        bool turningOn = !moving;
+
+        isReacting = true;
+
+        reactionSequence?.Kill();
+        visual.localPosition = visualRestLocalPosition;
+
+        SetMoving(turningOn);
+
+        reactionSequence = DOTween.Sequence();
+        reactionSequence.Append(visual.DOShakePosition(
+                    shakeDuration,
+                    new Vector3(shakeStrength, shakeStrength, 0f),
+                    shakeVibrato,
+                    90f,
+                    false,
+                    true
+                )).AppendInterval(togglePause).OnComplete(() =>
+            {
+                visual.localPosition = visualRestLocalPosition;
+                expectedPosition = rb.position;
+                isReacting = false;
+            }).SetLink(gameObject);
+    }
+
+    public void SetMovementPoints(Transform newPointA, Transform newPointB, bool startMovingTowardsB = true)
+    {
+        if (newPointA == null || newPointB == null)
+            return;
+
+        pointA = newPointA;
+        pointB = newPointB;
+
+        movingTowardsB = startMovingTowardsB;
+        
+        expectedPosition = rb != null
+            ? rb.position
+            : (Vector2)transform.position;
+
+        moving = true;
+    }
+
+    private void OnDestroy()
+    {
+        reactionSequence?.Kill();
+    }
 }
