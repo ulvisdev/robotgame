@@ -268,7 +268,6 @@ public class Robot : MonoBehaviour
         pointB = newPointB;
 
         movingTowardsB = startMovingTowardsB;
-
         expectedPosition = rb != null
             ? rb.position
             : (Vector2)transform.position;
