@@ -75,6 +75,12 @@ public class Robot : MonoBehaviour
             pointB.SetParent(null, true);
     }
 
+    private void Start()
+    {
+        FaceCurrentTarget();
+        UpdateAnimationSpeed();
+    }
+
     private void FixedUpdate()
     {
         // animator.SetBool("moving", moving);
@@ -141,6 +147,7 @@ public class Robot : MonoBehaviour
             // SetMoving(false);
             movingTowardsB = !movingTowardsB;
             expectedPosition = newPosition;
+            FaceCurrentTarget();
         }
     }
 
@@ -210,7 +217,9 @@ public class Robot : MonoBehaviour
         {
             float spreadMultiplier = i switch
             {
-                1 => -raySpread, 2 => raySpread, _ => 0f
+                1 => -raySpread,
+                2 => raySpread,
+                _ => 0f
             };
 
             Vector2 origin = frontCentre + sideways * (sidewaysExtent * spreadMultiplier);
@@ -267,6 +276,21 @@ public class Robot : MonoBehaviour
         Vector2 targetPosition = movingTowardsB ? pointB.position : pointA.position;
 
         return (targetPosition - rb.position).normalized;
+    }
+
+    public Vector2 GetCurrentMovementDirection()
+    {
+        return GetDesiredMovementDirection();
+    }
+
+    private void FaceCurrentTarget()
+    {
+        Vector2 direction = GetDesiredMovementDirection();
+
+        if (direction.sqrMagnitude < 0.000001f)
+            return;
+
+        UpdateFacingAnimation(direction);
     }
 
     private bool IsHeadOnCollision(Robot otherRobot)
@@ -407,6 +431,7 @@ public class Robot : MonoBehaviour
                 visual.localPosition = visualRestLocalPosition;
                 movingTowardsB = !movingTowardsB;
                 expectedPosition = rb.position;
+                FaceCurrentTarget();
                 isReacting = false;
             }).SetLink(gameObject);
     }
@@ -450,11 +475,12 @@ public class Robot : MonoBehaviour
         pointB = newPointB;
 
         movingTowardsB = startMovingTowardsB;
-        expectedPosition = rb != null
-            ? rb.position
-            : (Vector2)transform.position;
+        expectedPosition = rb != null ? rb.position : (Vector2)transform.position;
 
         moving = true;
+
+        FaceCurrentTarget();
+
     }
 
     private void UpdateAnimationSpeed()

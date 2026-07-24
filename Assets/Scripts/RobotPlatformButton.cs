@@ -4,7 +4,6 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 public class RobotPlatformButton : MonoBehaviour
 {
-
     [Header("Button Sprites")]
     [SerializeField] private SpriteRenderer buttonSpriteRenderer;
     [SerializeField] private Sprite idleSprite;
@@ -15,14 +14,14 @@ public class RobotPlatformButton : MonoBehaviour
 
     [Header("Optional Button Visual")]
     [SerializeField] private Transform buttonVisual;
-    [SerializeField] private Vector3 pressedLocalOffset = new Vector3(0f, 0f, 0f);
+    [SerializeField] private Vector3 pressedLocalOffset = Vector3.zero;
 
-    private readonly HashSet<Collider2D> robotCollidersOnButton = new();
+    private readonly HashSet<Collider2D> activatorCollidersOnButton = new();
 
     private Vector3 releasedVisualPosition;
     private bool currentPressedState;
 
-    public bool IsPressed => robotCollidersOnButton.Count > 0;
+    public bool IsPressed => activatorCollidersOnButton.Count > 0;
 
     private void Awake()
     {
@@ -31,7 +30,7 @@ public class RobotPlatformButton : MonoBehaviour
 
         if (buttonVisual != null)
             releasedVisualPosition = buttonVisual.localPosition;
-        
+
         if (buttonSpriteRenderer != null)
             buttonSpriteRenderer.sprite = idleSprite;
     }
@@ -49,7 +48,7 @@ public class RobotPlatformButton : MonoBehaviour
 
     private void OnDisable()
     {
-        robotCollidersOnButton.Clear();
+        activatorCollidersOnButton.Clear();
         SetPressed(false);
 
         foreach (ButtonMovingPlatform platform in controlledPlatforms)
@@ -61,24 +60,34 @@ public class RobotPlatformButton : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Robot robot = other.GetComponentInParent<Robot>();
-
-        if (robot == null)
+        if (!CanPressButton(other))
             return;
 
-        robotCollidersOnButton.Add(other);
+        activatorCollidersOnButton.Add(other);
         RefreshButtonState();
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        robotCollidersOnButton.Remove(other);
+        activatorCollidersOnButton.Remove(other);
         RefreshButtonState();
+    }
+
+    private bool CanPressButton(Collider2D other)
+    {
+        Robot robot = other.GetComponentInParent<Robot>();
+
+        if (robot != null)
+            return true;
+
+        return other.GetComponentInParent<PressurePlateActivator>() != null;
+
+        // return platform != null;
     }
 
     private void RefreshButtonState()
     {
-        robotCollidersOnButton.RemoveWhere(collider => collider == null || !collider.enabled);
+        activatorCollidersOnButton.RemoveWhere(collider => collider == null || !collider.enabled);
 
         SetPressed(IsPressed);
     }
@@ -92,9 +101,12 @@ public class RobotPlatformButton : MonoBehaviour
 
         if (buttonSpriteRenderer != null)
         {
-            buttonSpriteRenderer.sprite = pressed
-                ? pressedSprite
-                : idleSprite;
+            buttonSpriteRenderer.sprite = pressed ? pressedSprite : idleSprite;
+        }
+
+        if (buttonVisual != null)
+        {
+            buttonVisual.localPosition = pressed ? releasedVisualPosition + pressedLocalOffset : releasedVisualPosition;
         }
 
         foreach (ButtonMovingPlatform platform in controlledPlatforms)
@@ -103,5 +115,4 @@ public class RobotPlatformButton : MonoBehaviour
                 platform.SetButtonState(this, pressed);
         }
     }
-
 }
