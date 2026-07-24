@@ -11,6 +11,7 @@ public class PauseMenuManager : MonoBehaviour
     [SerializeField] private CanvasGroup pauseMenu;
     [SerializeField] private RectTransform pauseMenuContent;
     [SerializeField] private Button resumeButton;
+    [SerializeField] private Button restartButton;
 
     [Header("Scenes")]
     [SerializeField] private string mainMenuSceneName = "MainMenu";
@@ -92,7 +93,7 @@ public class PauseMenuManager : MonoBehaviour
         EventSystem.current?.SetSelectedGameObject(null);
 
         Sequence openSequence = DOTween.Sequence();
-    
+
         openSequence.SetUpdate(true);
 
         openSequence.Join(pauseMenu.DOFade(1f, fadeDuration).SetEase(Ease.OutQuad));
@@ -155,10 +156,24 @@ public class PauseMenuManager : MonoBehaviour
 
         isTransitioning = true;
 
+        pauseMenu.interactable = false;
+        pauseMenu.blocksRaycasts = false;
+
+        EventSystem.current?.SetSelectedGameObject(null);
+
         Time.timeScale = 1f;
 
-        Scene currentScene = SceneManager.GetActiveScene();
-        SceneManager.LoadScene(currentScene.buildIndex);
+        string currentSceneName = SceneManager.GetActiveScene().name;
+
+        if (SceneFader.Instance != null)
+        {
+            SceneFader.Instance.FadeToScene(currentSceneName);
+        }
+        else
+        {
+            Debug.LogWarning("SceneFader was not found.");
+            SceneManager.LoadScene(currentSceneName);
+        }
     }
 
     public void GoToMainMenu()
@@ -177,7 +192,16 @@ public class PauseMenuManager : MonoBehaviour
         EventSystem.current?.SetSelectedGameObject(null);
 
         Time.timeScale = 1f;
-        SceneManager.LoadScene(mainMenuSceneName);
+
+        if (SceneFader.Instance != null)
+        {
+            SceneFader.Instance.FadeToScene(mainMenuSceneName);
+        }
+        else
+        {
+            Debug.LogWarning("SceneFader was not found.");
+            SceneManager.LoadScene(mainMenuSceneName);
+        }
     }
 
     public void QuitGame()

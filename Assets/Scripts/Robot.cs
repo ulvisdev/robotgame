@@ -51,6 +51,7 @@ public class Robot : MonoBehaviour
 
     private static readonly int SpeedHash = Animator.StringToHash("Speed");
     private static readonly int DirectionHash = Animator.StringToHash("Direction");
+    private static readonly int VictoryHash = Animator.StringToHash("Victory");
 
     private const float SideDirection = 0f;
     private const float UpDirection = 0.5f;
@@ -520,6 +521,34 @@ public class Robot : MonoBehaviour
 
             sr.flipX = movement.x < 0f;
         }
+    }
+
+    public void FreezeForLevelFinish(bool playVictoryAnimation)
+    {
+        moving = false;
+        isReacting = false;
+
+        reactionSequence?.Kill();
+        reactionSequence = null;
+
+        if (visual != null)
+            visual.localPosition = visualRestLocalPosition;
+
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+
+        if (animator != null)
+        {
+            animator.SetFloat(SpeedHash, 0f);
+
+            if (playVictoryAnimation)
+                animator.SetTrigger(VictoryHash);
+        }
+
+        enabled = false;
     }
 
     private void OnDestroy()

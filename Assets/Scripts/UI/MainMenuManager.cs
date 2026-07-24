@@ -205,7 +205,27 @@ public class MainMenuManager : MonoBehaviour
             return;
         }
 
-        FadeOutAndRun(() => { SceneManager.LoadScene("Level" + levelNumber); });
+        isTransitioning = true;
+
+        if (currentPanel != null)
+        {
+            currentPanel.interactable = false;
+            currentPanel.blocksRaycasts = false;
+        }
+
+        EventSystem.current?.SetSelectedGameObject(null);
+
+        string sceneName = "Level" + levelNumber;
+
+        if (SceneFader.Instance != null)
+        {
+            SceneFader.Instance.FadeToScene(sceneName);
+        }
+        else
+        {
+            Debug.LogWarning("SceneFader was not found.");
+            SceneManager.LoadScene(sceneName);
+        }
     }
 
     private void FadeOutAndRun(System.Action action)
