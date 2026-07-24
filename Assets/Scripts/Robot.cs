@@ -13,6 +13,7 @@ public class Robot : MonoBehaviour
     public float MoveSpeed = 5f;
     public float arrivalDistance = 0.02f;
     private Rigidbody2D rb;
+    private Collider2D robotCollider;
     private SpriteRenderer sr;
     private bool movingTowardsB;
     private bool moving = false;
@@ -25,12 +26,25 @@ public class Robot : MonoBehaviour
     [SerializeField] private float wallPause = 0.2f;
     [SerializeField] private float togglePause = 0.15f;
     [SerializeField] private float shakeDuration = 0.25f;
-    [SerializeField] private float shakeStrength = 0.08f;
+    [SerializeField] private float shakeStrength = 0.1f;
     [SerializeField] private int shakeVibrato = 12;
 
     private bool isReacting;
     private Sequence reactionSequence;
     private Vector3 visualRestLocalPosition;
+
+    [Header("Robot Collision")]
+    [SerializeField] private float robotCollisionCooldown = 0.1f;
+    [SerializeField] private float robotSeparationDistance = 0.05f;
+
+    private bool waitForOtherRobotThisStep;
+    private float collisionDecisionUntil;
+
+    [Header("Front Ray Detection")]
+    [SerializeField] private LayerMask movementBlockerLayers;
+    [SerializeField, Range(0.1f, 0.8f)] private float raySpread = 0.5f;
+    [SerializeField] private float rayStartPadding = 0.002f;
+    [SerializeField] private float rayExtraDistance = 0.01f;
 
     [Header("Animation")]
     [SerializeField] private Animator animator;
@@ -45,6 +59,7 @@ public class Robot : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        robotCollider = GetComponent<Collider2D>();
         sr = visual.GetComponentInChildren<SpriteRenderer>();
         animator = visual.GetComponentInChildren<Animator>();
 
@@ -90,27 +105,26 @@ public class Robot : MonoBehaviour
             return;
         }
 
-        Vector2 targetPosition = movingTowardsB
-            ? pointB.position
-            : pointA.position;
+        Vector2 targetPosition = movingTowardsB ? pointB.position : pointA.position;
 
         Vector2 newPosition = Vector2.MoveTowards(
             rb.position,
             targetPosition,
-            MoveSpeed * Time.fixedDeltaTime
-        );
+            MoveSpeed * Time.fixedDeltaTime);
 
         Vector2 movement = newPosition - rb.position;
 
         UpdateFacingAnimation(movement);
 
+        waitForOtherRobotThisStep = false;
+
         bool movedSuccessfully = TryMove(movement);
 
         if (!movedSuccessfully)
         {
-            // SetMoving(false);
-            // movingTowardsB = !movingTowardsB;
-            PlayWallBounce();
+            if (!waitForOtherRobotThisStep)
+                PlayWallBounce();
+
             expectedPosition = rb.position;
             return;
         }
@@ -130,8 +144,7 @@ public class Robot : MonoBehaviour
         }
     }
 
-    private readonly RaycastHit2D[] pushHits = new RaycastHit2D[8];
-    private bool TryMove(Vector2 movement)
+    private bool TryMove(Vector2 movement, Robot pushingRobot = null)
     {
         float distance = movement.magnitude;
 
@@ -140,28 +153,197 @@ public class Robot : MonoBehaviour
 
         Vector2 direction = movement.normalized;
 
-        int hitCount = rb.Cast(direction, pushHits, distance + 0.01f);
-
-        for (int i = 0; i < hitCount; i++)
+        if (TryGetObstacleAhead(direction, distance, out RaycastHit2D hit))
         {
-            Rigidbody2D hitBody = pushHits[i].rigidbody;
+            Robot otherRobot = hit.collider.GetComponentInParent<Robot>();
 
-            if (hitBody == null || hitBody == rb)
-                continue;
-
-            if (hitBody.TryGetComponent(out Robot pushedRobot))
+            if (otherRobot != null && otherRobot != this && otherRobot != pushingRobot)
             {
-                if (!pushedRobot.TryMove(movement))
+                bool thisRobotIsMoving = moving && !isReacting;
+
+                bool otherRobotIsMoving = otherRobot.moving && !otherRobot.isReacting;
+
+                if (thisRobotIsMoving &&
+                    otherRobotIsMoving)
+                {
+                    HandleMovingRobotCollision(otherRobot);
+
+                    waitForOtherRobotThisStep = true;
+                    return false;
+                }
+
+                if (!otherRobot.TryMove(movement, this))
                     return false;
             }
             else
-            {
                 return false;
-            }
         }
 
         rb.MovePosition(rb.position + movement);
+        expectedPosition = rb.position;
+
         return true;
+    }
+
+    private bool TryGetObstacleAhead(Vector2 direction, float movementDistance, out RaycastHit2D closestHit)
+    {
+        closestHit = default;
+
+        if (robotCollider == null)
+            return false;
+
+        Bounds bounds = robotCollider.bounds;
+
+        Vector2 sideways = new Vector2(-direction.y, direction.x);
+
+        float forwardExtent = Mathf.Abs(direction.x) * bounds.extents.x + Mathf.Abs(direction.y) * bounds.extents.y;
+
+        float sidewaysExtent = Mathf.Abs(sideways.x) * bounds.extents.x + Mathf.Abs(sideways.y) * bounds.extents.y;
+
+        Vector2 frontCentre = (Vector2)bounds.center + direction * (forwardExtent + rayStartPadding);
+
+        float rayDistance = movementDistance + rayExtraDistance;
+
+        bool foundObstacle = false;
+
+        for (int i = 0; i < 3; i++)
+        {
+            float spreadMultiplier = i switch
+            {
+                1 => -raySpread, 2 => raySpread, _ => 0f
+            };
+
+            Vector2 origin = frontCentre + sideways * (sidewaysExtent * spreadMultiplier);
+
+            RaycastHit2D hit = Physics2D.Raycast(origin, direction, rayDistance, movementBlockerLayers);
+
+            Debug.DrawRay(origin, direction * rayDistance, hit.collider != null ? Color.red : Color.green);
+
+            if (hit.collider == null)
+                continue;
+
+            if (!foundObstacle || hit.distance < closestHit.distance)
+            {
+                closestHit = hit;
+                foundObstacle = true;
+            }
+        }
+
+        return foundObstacle;
+    }
+
+    private static Robot ChooseReactingRobot(Robot robotA, Robot robotB)
+    {
+        bool robotAMoving = robotA.moving && !robotA.isReacting;
+
+        bool robotBMoving = robotB.moving && !robotB.isReacting;
+
+        if (robotAMoving && !robotBMoving)
+            return robotA;
+
+        if (robotBMoving && !robotAMoving)
+            return robotB;
+
+        Vector2 directionAToB = (robotB.rb.position - robotA.rb.position).normalized;
+
+        float approachScoreA = robotAMoving ? Vector2.Dot(robotA.GetDesiredMovementDirection(), directionAToB) : -2f;
+
+        float approachScoreB = robotBMoving ? Vector2.Dot(robotB.GetDesiredMovementDirection(), -directionAToB) : -2f;
+
+        if (approachScoreA > approachScoreB + 0.01f)
+            return robotA;
+
+        if (approachScoreB > approachScoreA + 0.01f)
+            return robotB;
+
+        return robotA.GetInstanceID() < robotB.GetInstanceID() ? robotA : robotB;
+    }
+
+    private Vector2 GetDesiredMovementDirection()
+    {
+        if (pointA == null || pointB == null)
+            return Vector2.zero;
+
+        Vector2 targetPosition = movingTowardsB ? pointB.position : pointA.position;
+
+        return (targetPosition - rb.position).normalized;
+    }
+
+    private bool IsHeadOnCollision(Robot otherRobot)
+    {
+        if (otherRobot == null)
+            return false;
+
+        if (!moving || isReacting)
+            return false;
+
+        if (!otherRobot.moving || otherRobot.isReacting)
+            return false;
+
+        Vector2 directionToOther = (otherRobot.rb.position - rb.position).normalized;
+
+        Vector2 myDirection = GetDesiredMovementDirection();
+
+        Vector2 otherDirection = otherRobot.GetDesiredMovementDirection();
+
+        bool iAmApproaching = Vector2.Dot(myDirection, directionToOther) > 0.8f;
+
+        bool otherIsApproaching = Vector2.Dot(otherDirection, -directionToOther) > 0.8f;
+
+        bool directionsAreOpposite = Vector2.Dot(myDirection, otherDirection) < -0.8f;
+
+        return iAmApproaching && otherIsApproaching && directionsAreOpposite;
+    }
+
+    private void HandleMovingRobotCollision(Robot otherRobot)
+    {
+        if (otherRobot == null)
+            return;
+
+        if (Time.time < collisionDecisionUntil || Time.time < otherRobot.collisionDecisionUntil)
+        {
+            return;
+        }
+
+        float cooldownEnd = Time.time + wallPause + shakeDuration + robotCollisionCooldown;
+
+        collisionDecisionUntil = cooldownEnd;
+        otherRobot.collisionDecisionUntil = cooldownEnd;
+
+        if (IsHeadOnCollision(otherRobot))
+        {
+            SeparateRobots(otherRobot);
+            PlayWallBounce();
+            otherRobot.PlayWallBounce();
+            return;
+        }
+
+        Robot collidingRobot = ChooseReactingRobot(this, otherRobot);
+
+        collidingRobot.PlayWallBounce();
+    }
+
+    private void SeparateRobots(Robot otherRobot)
+    {
+        Vector2 separationDirection = otherRobot.rb.position - rb.position;
+
+        if (separationDirection.sqrMagnitude < 0.000001f)
+        {
+            separationDirection = GetDesiredMovementDirection();
+
+            if (separationDirection.sqrMagnitude < 0.000001f)
+                separationDirection = Vector2.right;
+        }
+
+        separationDirection.Normalize();
+
+        Vector2 separationOffset = separationDirection * (robotSeparationDistance * 0.5f);
+
+        rb.position -= separationOffset;
+        otherRobot.rb.position += separationOffset;
+
+        expectedPosition = rb.position;
+        otherRobot.expectedPosition = otherRobot.rb.position;
     }
 
     void OnMouseDown()

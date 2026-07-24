@@ -9,6 +9,6 @@ PhysicsMaterial2D:
   m_Name: Slippery
   serializedVersion: 2
   friction: 0
-  bounciness: 0.25
+  bounciness: 0
   m_FrictionCombine: 3
-  m_BounceCombine: 0
+  m_BounceCombine: 3

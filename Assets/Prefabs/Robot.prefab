@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5536158429564504436}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: PointA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5549412084810578334}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: PointB
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -73,7 +73,7 @@ GameObject:
   - component: {fileID: 7143462539994306754}
   - component: {fileID: 1831872630884133720}
   - component: {fileID: 5414929543918935445}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: AnimatedRobot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -182,9 +182,10 @@ GameObject:
   m_Component:
   - component: {fileID: 2987710590260088651}
   - component: {fileID: 4415742021006120780}
+  - component: {fileID: 3018522798407759907}
   - component: {fileID: 6602600969828969425}
   - component: {fileID: 2010168105058256570}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Robot
   m_TagString: Robot
   m_Icon: {fileID: 0}
@@ -232,9 +233,17 @@ MonoBehaviour:
   shakeDuration: 0.2
   shakeStrength: 0.1
   shakeVibrato: 12
+  robotCollisionCooldown: 0.1
+  robotSeparationDistance: 0.04
+  movementBlockerLayers:
+    serializedVersion: 2
+    m_Bits: 192
+  raySpread: 0.5
+  rayStartPadding: 0.002
+  rayExtraDistance: 0.01
   animator: {fileID: 0}
---- !u!61 &6602600969828969425
-BoxCollider2D:
+--- !u!70 &3018522798407759907
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -243,7 +252,44 @@ BoxCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 72418af88a4ec1546b1ba1b316f5bdc2, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: -0.125}
+  m_Size: {x: 0.65, y: 1.05}
+  m_Direction: 0
+--- !u!61 &6602600969828969425
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6550339247394662410}
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 6200000, guid: 72418af88a4ec1546b1ba1b316f5bdc2, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -295,7 +341,7 @@ Rigidbody2D:
   m_LinearDamping: 15
   m_AngularDamping: 15
   m_GravityScale: 0
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 72418af88a4ec1546b1ba1b316f5bdc2, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -315,7 +361,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3574039300015902296}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ShakeRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}

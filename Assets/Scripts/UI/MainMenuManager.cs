@@ -28,6 +28,13 @@ public class MainMenuManager : MonoBehaviour
     private CanvasGroup currentPanel;
     private bool isTransitioning;
 
+    [Header("Reset Progress")]
+    [SerializeField] private float deleteHoldDuration = 2f;
+    [SerializeField] private GameObject resetProgressMessage;
+
+    private float deleteHoldTimer;
+    private bool progressWasReset;
+
     private void Awake()
     {
         SetupLevelButtons();
@@ -38,6 +45,25 @@ public class MainMenuManager : MonoBehaviour
         SetPanelInstant(optionsPanel, false);
 
         currentPanel = mainPanel;
+    }
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.Delete))
+        {
+            deleteHoldTimer += Time.unscaledDeltaTime;
+
+            if (deleteHoldTimer >= deleteHoldDuration && !progressWasReset)
+            {
+                ResetGameProgress();
+                progressWasReset = true;
+            }
+        }
+        else
+        {
+            deleteHoldTimer = 0f;
+            progressWasReset = false;
+        }
     }
 
     private void SetPanelInstant(CanvasGroup panel, bool visible)
@@ -84,7 +110,7 @@ public class MainMenuManager : MonoBehaviour
         transition.SetUpdate(true);
 
         transition.Append(oldPanel.DOFade(0f, fadeOutDuration).SetEase(Ease.InOutQuad));
-        transition.AppendCallback(() =>{oldPanel.gameObject.SetActive(false);});
+        transition.AppendCallback(() => { oldPanel.gameObject.SetActive(false); });
         transition.AppendInterval(transitionDelay);
         transition.Append(newPanel.DOFade(1f, fadeInDuration).SetEase(Ease.InOutQuad));
 
@@ -179,7 +205,7 @@ public class MainMenuManager : MonoBehaviour
             return;
         }
 
-        FadeOutAndRun(() =>{SceneManager.LoadScene("Level" + levelNumber);});
+        FadeOutAndRun(() => { SceneManager.LoadScene("Level" + levelNumber); });
     }
 
     private void FadeOutAndRun(System.Action action)
@@ -202,7 +228,7 @@ public class MainMenuManager : MonoBehaviour
             .DOFade(0f, fadeOutDuration)
             .SetEase(Ease.InOutQuad)
             .SetUpdate(true)
-            .OnComplete(() =>{action?.Invoke();});
+            .OnComplete(() => { action?.Invoke(); });
     }
 
     public void SetVolume(float volume)
@@ -224,6 +250,30 @@ public class MainMenuManager : MonoBehaviour
 
             levelButtons[i].gameObject.SetActive(levelNumber <= highestUnlockedLevel);
         }
+    }
+
+    private void ResetGameProgress()
+    {
+        PlayerPrefs.SetInt(HighestUnlockedKey, 1);
+        PlayerPrefs.Save();
+
+        SetupLevelButtons();
+
+        Debug.Log("Game progress has been reset.");
+
+        if (resetProgressMessage != null)
+        {
+            resetProgressMessage.SetActive(true);
+
+            CancelInvoke(nameof(HideResetProgressMessage));
+            Invoke(nameof(HideResetProgressMessage), 2f);
+        }
+    }
+
+    private void HideResetProgressMessage()
+    {
+        if (resetProgressMessage != null)
+            resetProgressMessage.SetActive(false);
     }
 
     public void QuitGame()
