@@ -33,7 +33,14 @@ public class Robot : MonoBehaviour
     private Vector3 visualRestLocalPosition;
 
     [Header("Animation")]
-    private Animator animator;
+    [SerializeField] private Animator animator;
+
+    private static readonly int SpeedHash = Animator.StringToHash("Speed");
+    private static readonly int DirectionHash = Animator.StringToHash("Direction");
+
+    private const float SideDirection = 0f;
+    private const float UpDirection = 0.5f;
+    private const float DownDirection = 1f;
 
     void Awake()
     {
@@ -55,7 +62,8 @@ public class Robot : MonoBehaviour
 
     private void FixedUpdate()
     {
-        animator.SetBool("moving", moving);
+        // animator.SetBool("moving", moving);
+        UpdateAnimationSpeed();
 
         if (pointA == null || pointB == null)
             return;
@@ -94,6 +102,8 @@ public class Robot : MonoBehaviour
 
         Vector2 movement = newPosition - rb.position;
 
+        UpdateFacingAnimation(movement);
+
         bool movedSuccessfully = TryMove(movement);
 
         if (!movedSuccessfully)
@@ -107,10 +117,10 @@ public class Robot : MonoBehaviour
 
         expectedPosition = newPosition;
 
-        if (movement.x < 0f)
-            sr.flipX = true;
-        else if (movement.x > 0f)
-            sr.flipX = false;
+        // if (movement.x < 0f)
+        //     sr.flipX = true;
+        // else if (movement.x > 0f)
+        //     sr.flipX = false;
 
         if (Vector2.Distance(newPosition, targetPosition) <= arrivalDistance)
         {
@@ -188,8 +198,8 @@ public class Robot : MonoBehaviour
 
         moving = value;
 
-        if (animator != null)
-            animator.SetBool("moving", moving);
+        // if (animator != null)
+        //     animator.SetBool("moving", moving);
     }
 
     private void PlayWallBounce()
@@ -258,12 +268,51 @@ public class Robot : MonoBehaviour
         pointB = newPointB;
 
         movingTowardsB = startMovingTowardsB;
-        
+
         expectedPosition = rb != null
             ? rb.position
             : (Vector2)transform.position;
 
         moving = true;
+    }
+
+    private void UpdateAnimationSpeed()
+    {
+        if (animator == null)
+            return;
+
+        animator.SetFloat(SpeedHash, moving ? 1f : 0f);
+    }
+
+    private void UpdateFacingAnimation(Vector2 movement)
+    {
+        if (animator == null || sr == null)
+            return;
+
+        if (movement.sqrMagnitude < 0.000001f)
+            return;
+
+        bool movingVertically = Mathf.Abs(movement.y) > Mathf.Abs(movement.x);
+
+        if (movingVertically)
+        {
+            sr.flipX = false;
+
+            if (movement.y > 0f)
+            {
+                animator.SetFloat(DirectionHash, UpDirection);
+            }
+            else
+            {
+                animator.SetFloat(DirectionHash, DownDirection);
+            }
+        }
+        else
+        {
+            animator.SetFloat(DirectionHash, SideDirection);
+
+            sr.flipX = movement.x < 0f;
+        }
     }
 
     private void OnDestroy()

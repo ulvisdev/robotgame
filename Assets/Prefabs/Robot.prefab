@@ -139,7 +139,7 @@ SpriteRenderer:
   m_SortingLayerID: 1086263707
   m_SortingLayer: 2
   m_SortingOrder: 0
-  m_Sprite: {fileID: -1251511911324942757, guid: 65cfd2c49b61fb147b55ad5cd3e943f2, type: 3}
+  m_Sprite: {fileID: -4357249684492744212, guid: c983294280026f94a8a80acae566d3e9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -160,7 +160,7 @@ Animator:
   m_GameObject: {fileID: 5226825001302146467}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 0a62063426a024b4780c1fad409bb490, type: 2}
+  m_Controller: {fileID: 9100000, guid: 11b0c9d4705118243906fc8283d281d1, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -200,7 +200,7 @@ Transform:
   m_GameObject: {fileID: 6550339247394662410}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.5, y: 2.5, z: 0}
+  m_LocalPosition: {x: 4.5, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -232,6 +232,7 @@ MonoBehaviour:
   shakeDuration: 0.2
   shakeStrength: 0.1
   shakeVibrato: 12
+  animator: {fileID: 0}
 --- !u!61 &6602600969828969425
 BoxCollider2D:
   m_ObjectHideFlags: 0
