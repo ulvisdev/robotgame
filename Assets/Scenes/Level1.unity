@@ -43021,6 +43021,10 @@ PrefabInstance:
       value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 4415742021006120780, guid: ab8426f8d3f599546ad96c7071d64f30, type: 3}
+      propertyPath: startMovingTowardsB
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4415742021006120780, guid: ab8426f8d3f599546ad96c7071d64f30, type: 3}
       propertyPath: wallBlockingAlignment
       value: 0.9
       objectReference: {fileID: 0}
@@ -52785,6 +52789,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2987710590260088651, guid: ab8426f8d3f599546ad96c7071d64f30, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4415742021006120780, guid: ab8426f8d3f599546ad96c7071d64f30, type: 3}
+      propertyPath: startMovingTowardsB
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6550339247394662410, guid: ab8426f8d3f599546ad96c7071d64f30, type: 3}
