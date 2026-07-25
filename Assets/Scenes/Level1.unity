@@ -2053,6 +2053,14 @@ MonoBehaviour:
   rayStartPadding: 0.002
   rayExtraDistance: 0.01
   animator: {fileID: 0}
+  startSFX: {fileID: 0}
+  stopSFX: {fileID: 0}
+  turnDirectionSFX: {fileID: 0}
+  victorySFX: {fileID: 0}
+  wallHitSFX: []
+  walkingLoopSource: {fileID: 0}
+  walkingLoopSFX: {fileID: 0}
+  walkingLoopVolume: 0.5
 --- !u!50 &205315134
 Rigidbody2D:
   serializedVersion: 5
@@ -26648,6 +26656,7 @@ MonoBehaviour:
   punchDuration: 0.15
   punchVibrato: 3
   worldCamera: {fileID: 975250572}
+  dragSFX: {fileID: 0}
 --- !u!50 &633482211
 Rigidbody2D:
   serializedVersion: 5
@@ -27035,7 +27044,7 @@ MonoBehaviour:
   bulbRenderer: {fileID: 685979486}
   disabledBulbSprite: {fileID: -7602872859853857778, guid: c4c38225280f11e41815cdbf5fe7484a, type: 3}
   enabledBulbSprite: {fileID: -253294579345257289, guid: c4c38225280f11e41815cdbf5fe7484a, type: 3}
-  victoryDuration: 1
+  victoryDuration: 3
 --- !u!61 &685979484
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -31922,6 +31931,7 @@ MonoBehaviour:
   startScale: 0.8
   openEase: 27
   closeEase: 26
+  gameoverSFX: {fileID: 8300000, guid: f357e7b2d3a565948a73db020cb0a135, type: 3}
 --- !u!4 &878756227
 Transform:
   m_ObjectHideFlags: 0
@@ -33475,6 +33485,51 @@ Sprite:
   m_Bones: []
   m_ScriptableObjects: []
   m_SpriteID: 
+--- !u!1 &1025526691
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1025526693}
+  - component: {fileID: 1025526692}
+  m_Layer: 0
+  m_Name: LevelMusic
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1025526692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1025526691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bbba32b4ec3abf499d1aaea63aae088, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneMusic: {fileID: 8300000, guid: b5564f6b442f577419eb955cb45cd01d, type: 3}
+--- !u!4 &1025526693
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1025526691}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1062664108
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34748,6 +34803,7 @@ MonoBehaviour:
   punchDuration: 0.15
   punchVibrato: 3
   worldCamera: {fileID: 975250572}
+  dragSFX: {fileID: 0}
 --- !u!50 &1268301848
 Rigidbody2D:
   serializedVersion: 5
@@ -39118,6 +39174,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1434695311}
   - component: {fileID: 1434695310}
+  - component: {fileID: 1434695312}
   m_Layer: 5
   m_Name: PauseMenuManager
   m_TagString: Untagged
@@ -39161,6 +39218,14 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!81 &1434695312
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1434695309}
+  m_Enabled: 1
 --- !u!1 &1489071412
 GameObject:
   m_ObjectHideFlags: 0
@@ -39487,6 +39552,14 @@ MonoBehaviour:
   rayStartPadding: 0.002
   rayExtraDistance: 0.01
   animator: {fileID: 0}
+  startSFX: {fileID: 0}
+  stopSFX: {fileID: 0}
+  turnDirectionSFX: {fileID: 0}
+  victorySFX: {fileID: 0}
+  wallHitSFX: []
+  walkingLoopSource: {fileID: 0}
+  walkingLoopSFX: {fileID: 0}
+  walkingLoopVolume: 0.5
 --- !u!212 &1503731325
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -43784,6 +43857,9 @@ MonoBehaviour:
   - {fileID: 1414405799}
   buttonVisual: {fileID: 0}
   pressedLocalOffset: {x: 0, y: 0, z: 0}
+  pressSFX: {fileID: 8300000, guid: eb6a199e9b821544988f0cc45e9e8582, type: 3}
+  onbuttonSFX: {fileID: 8300000, guid: bc277945d9ad3dc45ab5d02cabe6380b, type: 3}
+  offbuttonSFX: {fileID: 8300000, guid: 99be599ab108a954389f406dae1d4715, type: 3}
 --- !u!61 &1838205169
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -52615,6 +52691,7 @@ SceneRoots:
   - {fileID: 1849428655}
   - {fileID: 519420032}
   - {fileID: 2131521291}
+  - {fileID: 1025526693}
   - {fileID: 878756227}
   - {fileID: 1434695311}
   - {fileID: 975250573}

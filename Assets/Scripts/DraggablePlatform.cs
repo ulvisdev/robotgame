@@ -34,6 +34,9 @@ public class DraggablePlatform : MonoBehaviour
     private bool isDragging;
     private Tween movementTween;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip dragSFX;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -84,7 +87,7 @@ public class DraggablePlatform : MonoBehaviour
             return;
 
         Vector2 mousePosition = GetMouseWorldPosition() + dragOffset;
-
+        AudioManager.Instance?.PlaySFX(dragSFX);
         desiredPosition = GetClosestPointOnLine(mousePosition, pointA.position, pointB.position);
     }
 

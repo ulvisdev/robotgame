@@ -24,6 +24,9 @@ public class GameOverManager : MonoBehaviour
     [SerializeField] private Ease openEase = Ease.OutBack;
     [SerializeField] private Ease closeEase = Ease.InBack;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip gameoverSFX;
+
     private bool isTransitioning;
 
     private void Awake()
@@ -51,6 +54,7 @@ public class GameOverManager : MonoBehaviour
 
         IsGameOver = true;
         isTransitioning = true;
+        AudioManager.Instance?.PlaySFX(gameoverSFX);
 
         Time.timeScale = 0f;
 

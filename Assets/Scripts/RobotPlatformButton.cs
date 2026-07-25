@@ -23,6 +23,11 @@ public class RobotPlatformButton : MonoBehaviour
 
     public bool IsPressed => activatorCollidersOnButton.Count > 0;
 
+    [Header("Button Audio")]
+    [SerializeField] private AudioClip pressSFX;
+    [SerializeField] private AudioClip onbuttonSFX;
+    [SerializeField] private AudioClip offbuttonSFX;
+
     private void Awake()
     {
         Collider2D buttonCollider = GetComponent<Collider2D>();
@@ -49,7 +54,7 @@ public class RobotPlatformButton : MonoBehaviour
     private void OnDisable()
     {
         activatorCollidersOnButton.Clear();
-        SetPressed(false);
+        SetPressed(false, false);
 
         foreach (ButtonMovingPlatform platform in controlledPlatforms)
         {
@@ -92,22 +97,29 @@ public class RobotPlatformButton : MonoBehaviour
         SetPressed(IsPressed);
     }
 
-    private void SetPressed(bool pressed)
+    private void SetPressed(bool pressed, bool playAudio = true)
     {
         if (currentPressedState == pressed)
             return;
 
         currentPressedState = pressed;
 
-        if (buttonSpriteRenderer != null)
+        if (playAudio)
         {
-            buttonSpriteRenderer.sprite = pressed ? pressedSprite : idleSprite;
+            if (pressed)
+            {
+                //AudioManager.Instance?.PlaySFX(pressSFX);
+                AudioManager.Instance?.PlaySFX(onbuttonSFX);
+            }
+            else
+                AudioManager.Instance?.PlaySFX(offbuttonSFX);
         }
 
+        if (buttonSpriteRenderer != null)
+            buttonSpriteRenderer.sprite = pressed ? pressedSprite : idleSprite;
+
         if (buttonVisual != null)
-        {
             buttonVisual.localPosition = pressed ? releasedVisualPosition + pressedLocalOffset : releasedVisualPosition;
-        }
 
         foreach (ButtonMovingPlatform platform in controlledPlatforms)
         {

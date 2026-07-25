@@ -49,4 +49,14 @@ public class AudioManager : MonoBehaviour
 
         sfxSource.PlayOneShot(clip, volume);
     }
+
+    public void PlayRandomSFX(AudioClip[] clips, float volume = 1f)
+    {
+        if (clips == null || clips.Length == 0)
+            return;
+
+        AudioClip clip = clips[Random.Range(0, clips.Length)];
+        PlaySFX(clip, volume);
+    }
+
 }

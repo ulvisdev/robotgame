@@ -57,6 +57,18 @@ public class Robot : MonoBehaviour
     private const float UpDirection = 0.5f;
     private const float DownDirection = 1f;
 
+    [Header("Robot Audio")]
+    [SerializeField] private AudioClip startSFX;
+    [SerializeField] private AudioClip stopSFX;
+    [SerializeField] private AudioClip turnDirectionSFX;
+    [SerializeField] private AudioClip victorySFX;
+    [SerializeField] private AudioClip[] wallHitSFX;
+
+    [Header("Walking Loop")]
+    [SerializeField] private AudioSource walkingLoopSource;
+    [SerializeField] private AudioClip walkingLoopSFX;
+    [SerializeField, Range(0f, 1f)] private float walkingLoopVolume = 0.5f;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -74,6 +86,14 @@ public class Robot : MonoBehaviour
 
         if (pointB != null && pointB.IsChildOf(transform))
             pointB.SetParent(null, true);
+
+        if (walkingLoopSource != null)
+        {
+            walkingLoopSource.clip = walkingLoopSFX;
+            walkingLoopSource.loop = true;
+            walkingLoopSource.playOnAwake = false;
+            walkingLoopSource.volume = walkingLoopVolume;
+        }
     }
 
     private void Start()
@@ -86,6 +106,7 @@ public class Robot : MonoBehaviour
     {
         // animator.SetBool("moving", moving);
         UpdateAnimationSpeed();
+        UpdateWalkingLoop();
 
         if (pointA == null || pointB == null)
             return;
@@ -114,10 +135,7 @@ public class Robot : MonoBehaviour
 
         Vector2 targetPosition = movingTowardsB ? pointB.position : pointA.position;
 
-        Vector2 newPosition = Vector2.MoveTowards(
-            rb.position,
-            targetPosition,
-            MoveSpeed * Time.fixedDeltaTime);
+        Vector2 newPosition = Vector2.MoveTowards(rb.position, targetPosition, MoveSpeed * Time.fixedDeltaTime);
 
         Vector2 movement = newPosition - rb.position;
 
@@ -416,6 +434,8 @@ public class Robot : MonoBehaviour
 
         isReacting = true;
 
+        AudioManager.Instance?.PlayRandomSFX(wallHitSFX);
+
         reactionSequence?.Kill();
         visual.localPosition = visualRestLocalPosition;
 
@@ -450,6 +470,7 @@ public class Robot : MonoBehaviour
         visual.localPosition = visualRestLocalPosition;
 
         SetMoving(turningOn);
+        AudioManager.Instance?.PlaySFX(moving ? startSFX : stopSFX);
 
         reactionSequence = DOTween.Sequence();
         reactionSequence.Append(visual.DOShakePosition(
@@ -481,6 +502,8 @@ public class Robot : MonoBehaviour
         moving = true;
 
         FaceCurrentTarget();
+
+        AudioManager.Instance?.PlaySFX(turnDirectionSFX);
 
     }
 
@@ -545,10 +568,34 @@ public class Robot : MonoBehaviour
             animator.SetFloat(SpeedHash, 0f);
 
             if (playVictoryAnimation)
+            {
                 animator.SetTrigger(VictoryHash);
+                AudioManager.Instance?.PlaySFX(victorySFX);
+            }
         }
 
+        if (walkingLoopSource != null)
+            walkingLoopSource.Stop();
         enabled = false;
+    }
+
+    private void UpdateWalkingLoop()
+    {
+        if (walkingLoopSource == null || walkingLoopSFX == null)
+            return;
+
+        bool shouldBePlaying = moving && !isReacting;
+
+        if (shouldBePlaying)
+        {
+            if (!walkingLoopSource.isPlaying)
+                walkingLoopSource.Play();
+        }
+        else
+        {
+            if (walkingLoopSource.isPlaying)
+                walkingLoopSource.Stop();
+        }
     }
 
     private void OnDestroy()
