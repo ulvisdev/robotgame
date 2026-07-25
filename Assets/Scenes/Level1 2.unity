@@ -1941,6 +1941,14 @@ MonoBehaviour:
   rayStartPadding: 0.002
   rayExtraDistance: 0.01
   animator: {fileID: 0}
+  startSFX: {fileID: 0}
+  stopSFX: {fileID: 0}
+  turnDirectionSFX: {fileID: 0}
+  victorySFX: {fileID: 0}
+  wallHitSFX: []
+  walkingLoopSource: {fileID: 0}
+  walkingLoopSFX: {fileID: 0}
+  walkingLoopVolume: 0.5
 --- !u!50 &205315134
 Rigidbody2D:
   serializedVersion: 5
@@ -9884,6 +9892,7 @@ MonoBehaviour:
   punchDuration: 0.15
   punchVibrato: 3
   worldCamera: {fileID: 975250572}
+  dragSFX: {fileID: 0}
 --- !u!50 &633482211
 Rigidbody2D:
   serializedVersion: 5
@@ -10255,6 +10264,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentLevelNumber: 1
   playerTag: Robot
+  bulbRenderer: {fileID: 0}
+  disabledBulbSprite: {fileID: 0}
+  enabledBulbSprite: {fileID: 0}
+  victoryDuration: 1
 --- !u!61 &685979484
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -12838,6 +12851,7 @@ MonoBehaviour:
   startScale: 0.8
   openEase: 27
   closeEase: 26
+  gameoverSFX: {fileID: 0}
 --- !u!4 &878756227
 Transform:
   m_ObjectHideFlags: 0
@@ -14149,7 +14163,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 18.78125
+  orthographic size: 11.5625
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -19812,6 +19826,7 @@ MonoBehaviour:
   pauseMenu: {fileID: 1856406962}
   pauseMenuContent: {fileID: 1856406961}
   resumeButton: {fileID: 1663390726}
+  restartButton: {fileID: 0}
   mainMenuSceneName: MainMenu
   fadeDuration: 0.25
   startScale: 0.9
@@ -20158,6 +20173,14 @@ MonoBehaviour:
   rayStartPadding: 0.002
   rayExtraDistance: 0.01
   animator: {fileID: 0}
+  startSFX: {fileID: 0}
+  stopSFX: {fileID: 0}
+  turnDirectionSFX: {fileID: 0}
+  victorySFX: {fileID: 0}
+  wallHitSFX: []
+  walkingLoopSource: {fileID: 0}
+  walkingLoopSFX: {fileID: 0}
+  walkingLoopVolume: 0.5
 --- !u!212 &1503731325
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -24459,6 +24482,9 @@ MonoBehaviour:
   - {fileID: 1414405799}
   buttonVisual: {fileID: 0}
   pressedLocalOffset: {x: 0, y: 0, z: 0}
+  pressSFX: {fileID: 0}
+  onbuttonSFX: {fileID: 0}
+  offbuttonSFX: {fileID: 0}
 --- !u!61 &1838205169
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -28889,7 +28915,7 @@ MonoBehaviour:
   newPointA: {fileID: 1094589556}
   newPointB: {fileID: 1160176436}
   moveTowardsB: 0
-  allowedEntrySide: 3
+  requiredDirectionAmount: 0.5
 --- !u!61 &2119685470
 BoxCollider2D:
   m_ObjectHideFlags: 0
