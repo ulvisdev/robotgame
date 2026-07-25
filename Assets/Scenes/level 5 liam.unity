@@ -34915,7 +34915,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pointA: {fileID: 1314970890}
   pointB: {fileID: 1239397985}
-  moveSpeed: 3
+  moveSpeed: 4.5
   startAtPointA: 0
   buttonRequirement: 0
 --- !u!50 &1414405800
@@ -45591,7 +45591,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pointA: {fileID: 1280011725}
   pointB: {fileID: 441176314}
-  moveSpeed: 3
+  moveSpeed: 4.5
   startAtPointA: 1
   buttonRequirement: 0
 --- !u!50 &2113913877
