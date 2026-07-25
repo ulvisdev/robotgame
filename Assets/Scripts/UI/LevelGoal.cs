@@ -1,6 +1,8 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Rendering.Universal;
+using DG.Tweening;
 
 public class LevelGoal : MonoBehaviour
 {
@@ -22,10 +24,19 @@ public class LevelGoal : MonoBehaviour
 
     private bool levelCompleted;
 
+    [Header("Victory Lighting")]
+    [SerializeField] private Light2D globalLight;
+    [SerializeField] private float normalLightIntensity = 1f;
+    [SerializeField] private float victoryLightIntensity = 2f;
+    [SerializeField] private float lightChangeDuration = 1f;
+
     private void Awake()
     {
         if (bulbRenderer != null && disabledBulbSprite != null)
             bulbRenderer.sprite = disabledBulbSprite;
+
+        if (globalLight != null)
+            globalLight.intensity = normalLightIntensity;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -66,6 +77,17 @@ public class LevelGoal : MonoBehaviour
         // Turn on the bulb.
         if (bulbRenderer != null && enabledBulbSprite != null)
             bulbRenderer.sprite = enabledBulbSprite;
+
+        if (bulbRenderer != null && enabledBulbSprite != null)
+            bulbRenderer.sprite = enabledBulbSprite;
+
+        if (globalLight != null)
+        {
+            DOTween.To(() => globalLight.intensity,
+                value => globalLight.intensity = value,
+                victoryLightIntensity,
+                lightChangeDuration).SetEase(Ease.OutQuad);
+        }
 
         // Let the winning animation play.
         yield return new WaitForSecondsRealtime(victoryDuration);

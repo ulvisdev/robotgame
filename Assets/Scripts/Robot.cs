@@ -608,6 +608,19 @@ public class Robot : MonoBehaviour
         return ((Vector2)targetPoint.position - rb.position).normalized;
     }
 
+    public void ForceShutdown()
+    {
+        moving = false;
+
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+
+            expectedPosition = rb.position;
+        }
+    }
+
     private void OnDestroy()
     {
         reactionSequence?.Kill();
