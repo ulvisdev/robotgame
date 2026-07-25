@@ -598,6 +598,16 @@ public class Robot : MonoBehaviour
         }
     }
 
+    public Vector2 GetMovementDirection()
+    {
+        Transform targetPoint = movingTowardsB ? pointB : pointA;
+
+        if (targetPoint == null)
+            return Vector2.zero;
+
+        return ((Vector2)targetPoint.position - rb.position).normalized;
+    }
+
     private void OnDestroy()
     {
         reactionSequence?.Kill();
