@@ -136,9 +136,22 @@ public class Robot : MonoBehaviour
 
         Vector2 targetPosition = movingTowardsB ? pointB.position : pointA.position;
 
-        Vector2 newPosition = Vector2.MoveTowards(rb.position, targetPosition, MoveSpeed * Time.fixedDeltaTime);
+        Vector2 movementDirection = GetRouteMovementDirection();
 
-        Vector2 movement = newPosition - rb.position;
+        if (movementDirection.sqrMagnitude < 0.000001f)
+        {
+            expectedPosition = rb.position;
+            return;
+        }
+
+        Vector2 toTarget = targetPosition - rb.position;
+
+        float distanceAlongRoute = Mathf.Max(0f, Vector2.Dot(toTarget, movementDirection));
+
+        float movementDistance = Mathf.Min(MoveSpeed * Time.fixedDeltaTime, distanceAlongRoute);
+
+        Vector2 movement = movementDirection * movementDistance;
+        Vector2 newPosition = rb.position + movement;
 
         UpdateFacingAnimation(movement);
 
@@ -162,7 +175,9 @@ public class Robot : MonoBehaviour
         // else if (movement.x > 0f)
         //     sr.flipX = false;
 
-        if (Vector2.Distance(newPosition, targetPosition) <= arrivalDistance)
+        float remainingDistance = distanceAlongRoute - movementDistance;
+
+        if (remainingDistance <= arrivalDistance)
         {
             // SetMoving(false);
             movingTowardsB = !movingTowardsB;
@@ -290,12 +305,7 @@ public class Robot : MonoBehaviour
 
     private Vector2 GetDesiredMovementDirection()
     {
-        if (pointA == null || pointB == null)
-            return Vector2.zero;
-
-        Vector2 targetPosition = movingTowardsB ? pointB.position : pointA.position;
-
-        return (targetPosition - rb.position).normalized;
+        return GetRouteMovementDirection();
     }
 
     public Vector2 GetCurrentMovementDirection()
@@ -367,28 +377,32 @@ public class Robot : MonoBehaviour
         collidingRobot.PlayWallBounce();
     }
 
-    private void SeparateRobots(Robot otherRobot)
-    {
-        Vector2 separationDirection = otherRobot.rb.position - rb.position;
+private void SeparateRobots(Robot otherRobot)
+{
+    if (otherRobot == null)
+        return;
 
-        if (separationDirection.sqrMagnitude < 0.000001f)
-        {
-            separationDirection = GetDesiredMovementDirection();
+    Vector2 separationDirection = GetRouteMovementDirection();
 
-            if (separationDirection.sqrMagnitude < 0.000001f)
-                separationDirection = Vector2.right;
-        }
+    if (separationDirection.sqrMagnitude < 0.000001f)
+        separationDirection = Vector2.right;
 
-        separationDirection.Normalize();
+    Vector2 directionToOther = otherRobot.rb.position - rb.position;
 
-        Vector2 separationOffset = separationDirection * (robotSeparationDistance * 0.5f);
+    if (Vector2.Dot(separationDirection, directionToOther) < 0f)
+        separationDirection = -separationDirection;
 
-        rb.position -= separationOffset;
-        otherRobot.rb.position += separationOffset;
+    Vector2 separationOffset = separationDirection * (robotSeparationDistance * 0.5f);
 
-        expectedPosition = rb.position;
-        otherRobot.expectedPosition = otherRobot.rb.position;
-    }
+    rb.position -= separationOffset;
+    otherRobot.rb.position += separationOffset;
+
+    rb.linearVelocity = Vector2.zero;
+    otherRobot.rb.linearVelocity = Vector2.zero;
+
+    expectedPosition = rb.position;
+    otherRobot.expectedPosition = otherRobot.rb.position;
+}
 
     private void OnMouseDown()
     {
@@ -404,7 +418,7 @@ public class Robot : MonoBehaviour
 
         PlayPowerToggle();
     }
-    
+
     void OnDrawGizmos()
     {
         if (pointA == null || pointB == null)
@@ -594,6 +608,30 @@ public class Robot : MonoBehaviour
             if (walkingLoopSource.isPlaying)
                 walkingLoopSource.Stop();
         }
+    }
+
+    private Vector2 GetRouteMovementDirection()
+    {
+        if (pointA == null || pointB == null)
+            return Vector2.zero;
+
+        Vector2 route = (Vector2)pointB.position - (Vector2)pointA.position;
+
+        if (route.sqrMagnitude < 0.000001f)
+            return Vector2.zero;
+
+        Vector2 direction;
+
+        if (Mathf.Abs(route.x) >= Mathf.Abs(route.y))
+        {
+            direction = new Vector2(Mathf.Sign(route.x), 0f);
+        }
+        else
+        {
+            direction = new Vector2(0f, Mathf.Sign(route.y));
+        }
+
+        return movingTowardsB ? direction : -direction;
     }
 
     public Vector2 GetMovementDirection()

@@ -26607,7 +26607,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 32
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 1280, y: 740}
+  m_ReferenceResolution: {x: 1280, y: 720}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
@@ -31591,7 +31591,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0.4, y: -130}
+  m_AnchoredPosition: {x: 0.4, y: -125}
   m_SizeDelta: {x: 292.5, y: 40}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &716032165
@@ -36532,7 +36532,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 11.5625
+  orthographic size: 11.25
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -47033,8 +47033,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonSpriteRenderer: {fileID: 1632370621}
-  idleSprite: {fileID: -6518242031988935372, guid: 28d5eb0765091eb4796702f93b0934ee, type: 3}
-  pressedSprite: {fileID: -6635905541183440361, guid: 28d5eb0765091eb4796702f93b0934ee, type: 3}
+  idleSprite: {fileID: 993607997, guid: 28d5eb0765091eb4796702f93b0934ee, type: 3}
+  pressedSprite: {fileID: -552027529, guid: 28d5eb0765091eb4796702f93b0934ee, type: 3}
   controlledPlatforms:
   - {fileID: 2113913876}
   buttonVisual: {fileID: 0}
@@ -47132,8 +47132,8 @@ SpriteRenderer:
   m_SortingLayerID: 1021446149
   m_SortingLayer: 2
   m_SortingOrder: 3
-  m_Sprite: {fileID: -6518242031988935372, guid: 28d5eb0765091eb4796702f93b0934ee, type: 3}
-  m_Color: {r: 0, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 993607997, guid: 28d5eb0765091eb4796702f93b0934ee, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -57501,8 +57501,8 @@ SpriteRenderer:
   m_SortingLayerID: 102065339
   m_SortingLayer: 4
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: a83888bca9999aa40beea99f1988333c, type: 3}
-  m_Color: {r: 0, g: 0.91027117, b: 1, a: 1}
+  m_Sprite: {fileID: -8836457729992339972, guid: 6382dcbe90365d74eb6688cac0939a36, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -58000,7 +58000,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 32
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 1280, y: 740}
+  m_ReferenceResolution: {x: 1280, y: 720}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
