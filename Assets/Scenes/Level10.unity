@@ -29093,7 +29093,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fec070b1d91991c4ab8f9d5972e65290, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentLevelNumber: 1
+  currentLevelNumber: 10
   playerTag: Robot
   bulbRenderer: {fileID: 685979486}
   disabledBulbSprite: {fileID: -7602872859853857778, guid: c4c38225280f11e41815cdbf5fe7484a, type: 3}
