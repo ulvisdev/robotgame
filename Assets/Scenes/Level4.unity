@@ -32133,6 +32133,7 @@ GameObject:
   - component: {fileID: 975250571}
   - component: {fileID: 975250570}
   - component: {fileID: 975250574}
+  - component: {fileID: 975250575}
   m_Layer: 0
   m_Name: Pixel Perfect Camera
   m_TagString: Untagged
@@ -32282,6 +32283,18 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 975250569}
   m_Enabled: 1
+--- !u!114 &975250575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 975250569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cac93959a8d74954db37b38905e9552d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!213 &978373658
 Sprite:
   m_ObjectHideFlags: 0
