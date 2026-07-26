@@ -36,6 +36,10 @@ public class DraggablePlatform : MonoBehaviour
 
     [Header("Audio")]
     [SerializeField] private AudioClip dragSFX;
+    [SerializeField] private float dragSoundThreshold = 0.05f;
+
+    private bool dragSoundPlayed;
+    private Vector2 dragStartPosition;
 
     private void Awake()
     {
@@ -70,6 +74,8 @@ public class DraggablePlatform : MonoBehaviour
             return;
 
         isDragging = true;
+        dragSoundPlayed = false;
+        dragStartPosition = rb.position;
 
         movementTween?.Kill();
         rb.DOKill();
@@ -81,15 +87,21 @@ public class DraggablePlatform : MonoBehaviour
         visual.DOScale(normalVisualScale * draggedScaleMultiplier, scaleDuration).SetEase(Ease.OutQuad);
     }
 
-    private void OnMouseDrag()
-    {
-        if (!isDragging)
-            return;
+private void OnMouseDrag()
+{
+    if (!isDragging)
+        return;
 
-        Vector2 mousePosition = GetMouseWorldPosition() + dragOffset;
+    Vector2 mousePosition = GetMouseWorldPosition() + dragOffset;
+    desiredPosition = GetClosestPointOnLine(mousePosition, pointA.position, pointB.position);
+
+    float distanceDragged = Vector2.Distance(dragStartPosition, desiredPosition);
+    if (!dragSoundPlayed && distanceDragged >= dragSoundThreshold)
+    {
+        dragSoundPlayed = true;
         AudioManager.Instance?.PlaySFX(dragSFX);
-        desiredPosition = GetClosestPointOnLine(mousePosition, pointA.position, pointB.position);
     }
+}
 
     private void OnMouseUp()
     {
@@ -106,13 +118,11 @@ public class DraggablePlatform : MonoBehaviour
         rb.DOKill();
         visual.DOKill();
 
-        visual.DOScale(normalVisualScale, snapBackDuration * 0.75f)
-            .SetEase(Ease.OutQuad);
+        visual.DOScale(normalVisualScale, snapBackDuration * 0.75f).SetEase(Ease.OutQuad);
 
         movementTween = rb.DOMove(pointA.position, snapBackDuration).SetEase(Ease.OutCubic).OnComplete(() =>
             {
                 desiredPosition = pointA.position;
-
                 visual.DOPunchScale(Vector3.one * punchStrength, punchDuration, punchVibrato, 0.5f);
             });
     }
@@ -123,16 +133,12 @@ public class DraggablePlatform : MonoBehaviour
 
         mouseScreenPosition.z = Mathf.Abs(worldCamera.transform.position.z);
 
-        Vector3 worldPosition =
-            worldCamera.ScreenToWorldPoint(mouseScreenPosition);
+        Vector3 worldPosition = worldCamera.ScreenToWorldPoint(mouseScreenPosition);
 
         return new Vector2(worldPosition.x, worldPosition.y);
     }
 
-    private Vector2 GetClosestPointOnLine(
-        Vector2 position,
-        Vector2 lineStart,
-        Vector2 lineEnd)
+    private Vector2 GetClosestPointOnLine(Vector2 position, Vector2 lineStart, Vector2 lineEnd)
     {
         Vector2 line = lineEnd - lineStart;
 

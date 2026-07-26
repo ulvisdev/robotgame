@@ -69,6 +69,11 @@ public class Robot : MonoBehaviour
     [SerializeField] private AudioSource walkingLoopSource;
     [SerializeField] private AudioClip walkingLoopSFX;
     [SerializeField, Range(0f, 1f)] private float walkingLoopVolume = 0.5f;
+    private bool walkingLoopWasPlayingBeforePause;
+
+    [Header("Wall Camera Shake")]
+    [SerializeField] private float wallCameraShakeDuration = 0.12f;
+    [SerializeField] private float wallCameraShakeStrength = 0.025f;
 
     void Awake()
     {
@@ -368,7 +373,7 @@ public class Robot : MonoBehaviour
         {
             SeparateRobots(otherRobot);
             PlayWallBounce();
-            otherRobot.PlayWallBounce();
+            otherRobot.PlayWallBounce(); //add false if dont want camerashake
             return;
         }
 
@@ -377,32 +382,32 @@ public class Robot : MonoBehaviour
         collidingRobot.PlayWallBounce();
     }
 
-private void SeparateRobots(Robot otherRobot)
-{
-    if (otherRobot == null)
-        return;
+    private void SeparateRobots(Robot otherRobot)
+    {
+        if (otherRobot == null)
+            return;
 
-    Vector2 separationDirection = GetRouteMovementDirection();
+        Vector2 separationDirection = GetRouteMovementDirection();
 
-    if (separationDirection.sqrMagnitude < 0.000001f)
-        separationDirection = Vector2.right;
+        if (separationDirection.sqrMagnitude < 0.000001f)
+            separationDirection = Vector2.right;
 
-    Vector2 directionToOther = otherRobot.rb.position - rb.position;
+        Vector2 directionToOther = otherRobot.rb.position - rb.position;
 
-    if (Vector2.Dot(separationDirection, directionToOther) < 0f)
-        separationDirection = -separationDirection;
+        if (Vector2.Dot(separationDirection, directionToOther) < 0f)
+            separationDirection = -separationDirection;
 
-    Vector2 separationOffset = separationDirection * (robotSeparationDistance * 0.5f);
+        Vector2 separationOffset = separationDirection * (robotSeparationDistance * 0.5f);
 
-    rb.position -= separationOffset;
-    otherRobot.rb.position += separationOffset;
+        rb.position -= separationOffset;
+        otherRobot.rb.position += separationOffset;
 
-    rb.linearVelocity = Vector2.zero;
-    otherRobot.rb.linearVelocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
+        otherRobot.rb.linearVelocity = Vector2.zero;
 
-    expectedPosition = rb.position;
-    otherRobot.expectedPosition = otherRobot.rb.position;
-}
+        expectedPosition = rb.position;
+        otherRobot.expectedPosition = otherRobot.rb.position;
+    }
 
     private void OnMouseDown()
     {
@@ -439,7 +444,7 @@ private void SeparateRobots(Robot otherRobot)
         //     animator.SetBool("moving", moving);
     }
 
-    private void PlayWallBounce()
+    private void PlayWallBounce(bool shakeCamera = true)
     {
         if (isReacting || visual == null)
             return;
@@ -447,6 +452,15 @@ private void SeparateRobots(Robot otherRobot)
         isReacting = true;
 
         AudioManager.Instance?.PlayRandomSFX(wallHitSFX);
+
+        if (shakeCamera)
+        {
+            CameraShake.Instance?.ShakeCamera
+                (wallCameraShakeDuration,
+                wallCameraShakeStrength,
+                true,
+                true);
+        }
 
         reactionSequence?.Kill();
         visual.localPosition = visualRestLocalPosition;
@@ -632,6 +646,27 @@ private void SeparateRobots(Robot otherRobot)
         }
 
         return movingTowardsB ? direction : -direction;
+    }
+
+    public void SetPauseAudio(bool paused)
+    {
+        if (walkingLoopSource == null)
+            return;
+
+        if (paused)
+        {
+            walkingLoopWasPlayingBeforePause = walkingLoopSource.isPlaying;
+
+            if (walkingLoopWasPlayingBeforePause)
+                walkingLoopSource.Pause();
+        }
+        else
+        {
+            if (walkingLoopWasPlayingBeforePause && moving && !isReacting)
+                walkingLoopSource.UnPause();
+
+            walkingLoopWasPlayingBeforePause = false;
+        }
     }
 
     public Vector2 GetMovementDirection()

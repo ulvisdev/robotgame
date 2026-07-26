@@ -244,7 +244,7 @@ MonoBehaviour:
   rayStartPadding: 0.01
   rayExtraDistance: 0.01
   animator: {fileID: 0}
-  startSFX: {fileID: 8300000, guid: 7d5ddcc2750ac194987f43a517bc0612, type: 3}
+  startSFX: {fileID: 8300000, guid: 0925cc0e8c2d56146976964aee7de547, type: 3}
   stopSFX: {fileID: 8300000, guid: 4c802978b93f0884781c9278abc551c3, type: 3}
   turnDirectionSFX: {fileID: 8300000, guid: 79df8743d30952945aaf2a24bb372902, type: 3}
   victorySFX: {fileID: 8300000, guid: de8f889f5fd7c584d952556ed68479f6, type: 3}

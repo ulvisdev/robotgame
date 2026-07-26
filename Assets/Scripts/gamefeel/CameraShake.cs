@@ -1,63 +1,68 @@
-using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
+using UnityEngine;
 
 public class CameraShake : MonoBehaviour
 {
-    private Vector3 originalPosition;
-    private bool isShaking = false;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        originalPosition = transform.localPosition;
-    }
+    public static CameraShake Instance { get; private set; }
 
-    // Update is called once per frame
-    void Update()
+    private Vector3 originalPosition;
+    private Coroutine shakeRoutine;
+
+    private void Awake()
     {
-        if (Input.GetKeyDown(KeyCode.W))
+        if (Instance != null && Instance != this)
         {
-            ShakeCamera(0.5f , 0.05f , true , true );
-        }
-    }
-    public void ShakeCamera(float duration , float severity , bool vertical , bool horizontal)
-    {
-        if(isShaking)
-        {
+            Destroy(gameObject);
             return;
         }
 
-        StartCoroutine(Shake(duration , severity , vertical , horizontal));
+        Instance = this;
+        originalPosition = transform.localPosition;
     }
 
-    private IEnumerator Shake(float duration , float severity , bool vertical , bool horizontal)
+    public void ShakeCamera(float duration, float severity, bool vertical = true, bool horizontal = true)
     {
+
+        if (shakeRoutine != null)
+        {
+            StopCoroutine(shakeRoutine);
+            transform.localPosition = originalPosition;
+        }
+
         originalPosition = transform.localPosition;
-        isShaking = true;
-        while(duration > 0)
+        shakeRoutine = StartCoroutine(Shake(duration, severity, vertical, horizontal));
+    }
+
+    private IEnumerator Shake(float duration, float severity, bool vertical, bool horizontal)
+    {
+        float remainingTime = duration;
+
+        while (remainingTime > 0f)
         {
             Vector3 shakeOffset = Vector3.zero;
 
-            if(horizontal)
-            {
-                shakeOffset.x = Random.Range(-1f , 1f) * severity;
-            }
-            if(vertical)
-            {
-                shakeOffset.y = Random.Range(-1f , 1f) * severity;
-            }
-        
-            transform.localPosition = originalPosition + shakeOffset;
+            if (horizontal)
+                shakeOffset.x = Random.Range(-1f, 1f) * severity;
 
-            duration -= Time.deltaTime;
+            if (vertical)
+                shakeOffset.y = Random.Range(-1f, 1f) * severity;
+
+            transform.localPosition = originalPosition + shakeOffset;
+            remainingTime -= Time.unscaledDeltaTime;
 
             yield return null;
-
         }
+
         transform.localPosition = originalPosition;
-        isShaking = false;
-
-
+        shakeRoutine = null;
     }
 
+    private void OnDisable()
+    {
+        if (shakeRoutine != null)
+            StopCoroutine(shakeRoutine);
+
+        transform.localPosition = originalPosition;
+        shakeRoutine = null;
+    }
 }

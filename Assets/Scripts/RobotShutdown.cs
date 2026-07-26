@@ -7,6 +7,11 @@ public class RobotShutdown : MonoBehaviour
     [Header("UI")]
     [SerializeField] private TMP_Text usesText;
 
+    [Header("Shutdown Effects")]
+    [SerializeField] private AudioClip shutdownSFX;
+    [SerializeField] private float cameraShakeDuration = 0.3f;
+    [SerializeField] private float cameraShakeStrength = 0.06f;
+
     private bool hasBeenUsed;
 
     private void Start()
@@ -23,9 +28,7 @@ public class RobotShutdown : MonoBehaviour
             return;
 
         if (Mouse.current.rightButton.wasPressedThisFrame)
-        {
             ShutdownAllRobots();
-        }
     }
 
     private void ShutdownAllRobots()
@@ -34,8 +37,16 @@ public class RobotShutdown : MonoBehaviour
 
         foreach (Robot robot in robots)
         {
-            robot.ForceShutdown();
+            if (robot != null)
+                robot.ForceShutdown();
         }
+
+        AudioManager.Instance?.PlaySFX(shutdownSFX);
+        CameraShake.Instance?.ShakeCamera
+            (cameraShakeDuration,
+            cameraShakeStrength,
+            true,
+            true);
 
         hasBeenUsed = true;
         UpdateText();

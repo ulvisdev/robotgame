@@ -78,6 +78,7 @@ public class PauseMenuManager : MonoBehaviour
         isPaused = true;
         isTransitioning = true;
 
+        SetRobotAudioPaused(true);
         Time.timeScale = 0f;
 
         pauseMenu.DOKill();
@@ -146,6 +147,7 @@ public class PauseMenuManager : MonoBehaviour
             isTransitioning = false;
 
             Time.timeScale = 1f;
+            SetRobotAudioPaused(false);
         });
     }
 
@@ -201,6 +203,17 @@ public class PauseMenuManager : MonoBehaviour
         {
             Debug.LogWarning("SceneFader was not found.");
             SceneManager.LoadScene(mainMenuSceneName);
+        }
+    }
+
+    private void SetRobotAudioPaused(bool paused)
+    {
+        Robot[] robots = FindObjectsByType<Robot>(FindObjectsSortMode.None);
+
+        foreach (Robot robot in robots)
+        {
+            if (robot != null)
+                robot.SetPauseAudio(paused);
         }
     }
 

@@ -17,15 +17,22 @@ public class ButtonMovingPlatform : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private bool startAtPointA = true;
+    [SerializeField] private float movementThreshold = 0.01f;
 
     [Header("Button Logic")]
     [SerializeField]
     private ButtonRequirement buttonRequirement = ButtonRequirement.AnyButton;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip movementSFX;
+
     private Rigidbody2D rb;
 
     private readonly HashSet<RobotPlatformButton> registeredButtons = new();
     private readonly HashSet<RobotPlatformButton> pressedButtons = new();
+
+    private bool? previousTargetWasPointB;
+    private bool movementSoundPlayed;
 
     private void Awake()
     {
@@ -44,12 +51,26 @@ public class ButtonMovingPlatform : MonoBehaviour
     {
         RemoveMissingButtons();
 
-        Vector2 targetPosition = ShouldMoveToPointB() ? pointB.position: pointA.position;
+        bool moveToPointB = ShouldMoveToPointB();
 
-        Vector2 newPosition = Vector2.MoveTowards(
-            rb.position,
-            targetPosition,
-            moveSpeed * Time.fixedDeltaTime);
+        Vector2 targetPosition = moveToPointB ? pointB.position : pointA.position;
+
+        if (!previousTargetWasPointB.HasValue || previousTargetWasPointB.Value != moveToPointB)
+        {
+            previousTargetWasPointB = moveToPointB;
+            movementSoundPlayed = false;
+        }
+
+        bool isActuallyMoving = Vector2.Distance(rb.position, targetPosition) > movementThreshold;
+        if (isActuallyMoving && !movementSoundPlayed)
+        {
+            movementSoundPlayed = true;
+
+            if (movementSFX != null)
+                AudioManager.Instance?.PlaySFX(movementSFX);
+        }
+
+        Vector2 newPosition = Vector2.MoveTowards(rb.position, targetPosition, moveSpeed * Time.fixedDeltaTime);
 
         rb.MovePosition(newPosition);
     }
@@ -71,10 +92,7 @@ public class ButtonMovingPlatform : MonoBehaviour
         pressedButtons.Remove(button);
     }
 
-    public void SetButtonState(
-        RobotPlatformButton button,
-        bool isPressed
-    )
+    public void SetButtonState(RobotPlatformButton button, bool isPressed)
     {
         if (button == null)
             return;
@@ -97,7 +115,8 @@ public class ButtonMovingPlatform : MonoBehaviour
             case ButtonRequirement.AllButtons:
                 return pressedButtons.Count >= registeredButtons.Count;
 
-            case ButtonRequirement.AnyButton: default:
+            case ButtonRequirement.AnyButton:
+            default:
                 return pressedButtons.Count > 0;
         }
     }
