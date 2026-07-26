@@ -18,6 +18,7 @@ public class Robot : MonoBehaviour
     private bool movingTowardsB;
     private bool moving = false;
     public bool ismoving => moving && !isReacting;
+    public bool IsPoweredOn => moving;
 
     private Vector2 expectedPosition;
 
@@ -389,7 +390,12 @@ public class Robot : MonoBehaviour
         otherRobot.expectedPosition = otherRobot.rb.position;
     }
 
-    void OnMouseDown()
+    private void OnMouseDown()
+    {
+        HandleClick();
+    }
+
+    public void HandleClick()
     {
         Debug.Log("Robot clicked!");
 
@@ -397,16 +403,8 @@ public class Robot : MonoBehaviour
             return;
 
         PlayPowerToggle();
-
-        // SetMoving(!moving);
-
-        // moving = !moving;
-        // expectedPosition = rb.position;
-
-        // if (!moving)
-        //     rb.linearVelocity = Vector2.zero;
     }
-
+    
     void OnDrawGizmos()
     {
         if (pointA == null || pointB == null)
