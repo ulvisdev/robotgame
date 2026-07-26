@@ -21,7 +21,7 @@ public class Bar : MonoBehaviour
 
     void Update()
     {
-        if (energyDepleted)
+        if (energyDepleted || energyDrainStopped)
             return;
 
         float totalDrain = EnergyDrainRate;
@@ -43,7 +43,7 @@ public class Bar : MonoBehaviour
             energyDepleted = true;
             GameOverManager.Instance.ShowGameOver();
         }
-        
+
         // if (Energy > 0)
         // {
         //     Energy -= EnergyDrainRate * Time.deltaTime;
@@ -55,5 +55,12 @@ public class Bar : MonoBehaviour
         // }
         // else
         //     Energy = 0;
+    }
+
+    private bool energyDrainStopped;
+
+    public void StopEnergyDrain()
+    {
+        energyDrainStopped = true;
     }
 }

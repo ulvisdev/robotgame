@@ -15802,8 +15802,9 @@ MonoBehaviour:
   EnergyDrainRate: 1
   RobotEnergyDrainRate: 2
   robots:
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 1997602451}
+  - {fileID: 1752040244}
+  - {fileID: 486994993}
 --- !u!1 &236075729
 GameObject:
   m_ObjectHideFlags: 0
@@ -19888,6 +19889,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ab8426f8d3f599546ad96c7071d64f30, type: 3}
+--- !u!114 &486994993 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4415742021006120780, guid: ab8426f8d3f599546ad96c7071d64f30, type: 3}
+  m_PrefabInstance: {fileID: 486994992}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cdcd5381c7edca459f65e5579cdfd2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &488731253
 GameObject:
   m_ObjectHideFlags: 0
@@ -22722,8 +22734,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4294893021
+  m_fontColor: {r: 0.8666667, g: 0.8666667, b: 0.99607843, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -23442,11 +23454,12 @@ MonoBehaviour:
   bulbRenderer: {fileID: 685979486}
   disabledBulbSprite: {fileID: -7602872859853857778, guid: c4c38225280f11e41815cdbf5fe7484a, type: 3}
   enabledBulbSprite: {fileID: -253294579345257289, guid: c4c38225280f11e41815cdbf5fe7484a, type: 3}
-  victoryDuration: 6
+  victoryDuration: 3
   globalLight: {fileID: 1860960363}
   normalLightIntensity: 1
   victoryLightIntensity: 2
   lightChangeDuration: 1
+  energyBar: {fileID: 216364035}
 --- !u!61 &685979484
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -23842,8 +23855,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4294893021
+  m_fontColor: {r: 0.8666667, g: 0.8666667, b: 0.99607843, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -43175,6 +43188,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ab8426f8d3f599546ad96c7071d64f30, type: 3}
+--- !u!114 &1752040244 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4415742021006120780, guid: ab8426f8d3f599546ad96c7071d64f30, type: 3}
+  m_PrefabInstance: {fileID: 1752040243}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cdcd5381c7edca459f65e5579cdfd2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!213 &1753432548
 Sprite:
   m_ObjectHideFlags: 0

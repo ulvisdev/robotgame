@@ -241,7 +241,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 192
   raySpread: 0.5
-  rayStartPadding: 0.002
+  rayStartPadding: 0.01
   rayExtraDistance: 0.01
   animator: {fileID: 0}
   startSFX: {fileID: 8300000, guid: 7d5ddcc2750ac194987f43a517bc0612, type: 3}
@@ -326,7 +326,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: -0.15}
+  m_Offset: {x: 0, y: -0.1}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -336,7 +336,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.65, y: 1}
+  m_Size: {x: 0.5, y: 0.8}
   m_EdgeRadius: 0
 --- !u!50 &2010168105058256570
 Rigidbody2D:

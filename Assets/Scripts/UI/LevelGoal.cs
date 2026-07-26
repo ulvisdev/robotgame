@@ -30,6 +30,9 @@ public class LevelGoal : MonoBehaviour
     [SerializeField] private float victoryLightIntensity = 2f;
     [SerializeField] private float lightChangeDuration = 1f;
 
+    [Header("Energy")]
+    [SerializeField] private Bar energyBar;
+
     private void Awake()
     {
         if (bulbRenderer != null && disabledBulbSprite != null)
@@ -62,24 +65,21 @@ public class LevelGoal : MonoBehaviour
 
         levelCompleted = true;
 
+        if (energyBar != null)
+            energyBar.StopEnergyDrain();
+
         UnlockNextLevel();
 
-        // Freeze every robot. Only the robot at the goal celebrates.
-        Robot[] allRobots = FindObjectsByType<Robot>(
-            FindObjectsSortMode.None
-        );
+        Robot[] allRobots = FindObjectsByType<Robot>(FindObjectsSortMode.None);
 
         foreach (Robot robot in allRobots)
         {
             robot.FreezeForLevelFinish(robot == winningRobot);
         }
 
-        // Turn on the bulb.
         if (bulbRenderer != null && enabledBulbSprite != null)
             bulbRenderer.sprite = enabledBulbSprite;
 
-        if (bulbRenderer != null && enabledBulbSprite != null)
-            bulbRenderer.sprite = enabledBulbSprite;
 
         if (globalLight != null)
         {
@@ -96,9 +96,7 @@ public class LevelGoal : MonoBehaviour
         {
             if (currentLevelNumber < 10)
             {
-                SceneFader.Instance.FadeToScene(
-                    "Level" + (currentLevelNumber + 1)
-                );
+                SceneFader.Instance.FadeToScene("Level" + (currentLevelNumber + 1));
             }
             else
             {
@@ -107,10 +105,6 @@ public class LevelGoal : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning(
-                "SceneFader not found. Loading scene without fading."
-            );
-
             LoadNextSceneImmediately();
         }
     }
@@ -119,17 +113,11 @@ public class LevelGoal : MonoBehaviour
     {
         int nextLevelNumber = currentLevelNumber + 1;
 
-        int highestUnlocked =
-            PlayerPrefs.GetInt(HighestUnlockedKey, 1);
+        int highestUnlocked = PlayerPrefs.GetInt(HighestUnlockedKey, 1);
 
-        if (nextLevelNumber > highestUnlocked &&
-            nextLevelNumber <= 10)
+        if (nextLevelNumber > highestUnlocked && nextLevelNumber <= 10)
         {
-            PlayerPrefs.SetInt(
-                HighestUnlockedKey,
-                nextLevelNumber
-            );
-
+            PlayerPrefs.SetInt(HighestUnlockedKey, nextLevelNumber);
             PlayerPrefs.Save();
         }
     }
